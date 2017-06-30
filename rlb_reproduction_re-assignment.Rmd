@@ -42,9 +42,10 @@ for(i in x2){
 # This works, except when there is a double entry in GDPperCapita, the whole command stops. We remove the double entries Morocco, Sudan and Canada
 #GDPperCapita = GDPperCapita[-31,]
 #GDPperCapita = GDPperCapita[-116,]
-GDPperCapita = GDPperCapita[-164,]  
+#GDPperCapita = GDPperCapita[-164,]  #this is not a clean method, so the lines have to be disabled to protect the dataframe.
 
-
+ggplot(data = Hdi, aes(x = Entity, y = GDP)) + geom_point()
+# 
 ```
 
 
