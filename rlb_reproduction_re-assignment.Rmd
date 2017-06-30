@@ -44,9 +44,14 @@ for(i in x2){
 #GDPperCapita = GDPperCapita[-116,]
 #GDPperCapita = GDPperCapita[-164,]  #this is not a clean method, so the lines have to be disabled to protect the dataframe.
 
-ggplot(data = Hdi, aes(x = Entity, y = GDP)) + geom_point()
+ggplot(data = Hdi[which(Hdi$Year == 2010),], mapping = aes(x = Entity, y = GDP)) + geom_point()
 # 
+plot(Hdi$`Human Development Index (UNDP)`, Hdi$GDP)
+years_2010 = which(Hdi$Year == 2010)
+plot(Hdi$`Human Development Index (UNDP)`[years_2010], Hdi$GDP[years_2010])
 ```
+
+As expected, the two seem pretty correlated. The relationship is not exactly linear though. This has probably to do with the correlation with health and GNI, resulting in some kind of quadratic relationship. Thankfully this is only an exercise on plotting, not on regression analyses.
 
 
 # Our world in data
