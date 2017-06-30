@@ -1,0 +1,139 @@
+---
+title: "RLB Assignment Resit"
+output: html_document
+---
+
+`Money doesn´t buy happiness´ might be the first confusing lesson I was learned. We have all experienced this in our lives one way or another, yet the practical explanation of this seems confusing. We spent most of our time directly or indirectly working to obtain money, and the stuff that tends to make us happy (food, entertainment, health, the ability to care for our family) is obtained a lot easier with a healthy bank account. The strongest argument for this statement may be found in the strong correlation between the world's happiest countries and their national wealth. The World Happiness Report partly supports this claim by stating that happiness comes from income and a healthy life expectancy, along with less materialistic concepts like a caring environment, freedom, generosity and trust.
+A great way of measuring standard of living is by looking at the Human Development Index (HDI). This measures the quality of life in a country. It is interesting to look at the relationship between the two. It is expected of the two to correlate, because the HDI is comprised by three measures, one of which is GNI per capita. GNI and GDP per capita are almost identical.
+
+```{r, message = FALSE}
+library(ggplot2)
+setwd("C:\Users\Joep\Documents\statistical science")  # set working directory to wherever your data is stored
+library(readxl)  # Rstudio should automatically install the packages required for this package
+GDPperCapita_Broad <- read_excel("~/statistical science/GDPperCapita_Broad.xlsx")
+View(GDPperCapita_Broad)  # received from https://www.clio-infra.eu/Indicators/GDPperCapita.html via ourworldindata.org
+str(GDPperCapita_Broad)  # contains data on the gdp per capita for each year from each country since 1500. As expected, this data is incomplete as the term gdp or most countries don't exist since 1500.
+library(readr)
+human_development_index <- read_csv("~/statistical science/human-development-index.csv")
+View(human_development_index)
+# The data is only about the years 1980 to 2014, with steps of 5 up to 2010. Because our GDPperCapita data only goes up untill 2010, we have to select the years we can work with
+GDPperCapita = GDPperCapita_Broad[c('country name', '1980', '1985', '1990', '1995', '2000', '2005', '2010')]
+View(GDPperCapita)
+
+x = 1:length(human_development_index$'Entity')
+Hdi = human_development_index
+Hdi$GDP = rep(0, times = length(x))
+a = 0
+for(i in x){
+  if(Hdi$Year[i] == 2011 | Hdi$Year[i] == 2012 |Hdi$Year[i] == 2013 | Hdi$Year[i] == 2014){
+    a = append(a, i, length(a))
+  }
+}
+if(a[1] == 0){
+  a = a[2:length(a)]
+}
+Hdi = human_development_index[-a,]
+
+x2 = 1:length(Hdi$Entity)
+Hdi$GDP = rep(NA, times = length(Hdi$Entity))
+for(i in x2){
+  Hdi$GDP[i] = as.numeric(GDPperCapita[which(GDPperCapita$`country name` == Hdi$Entity[i]), which(colnames(GDPperCapita) == Hdi$Year[i])])
+}
+# This works, except when there is a double entry in GDPperCapita, the whole command stops. We remove the double entries Morocco, Sudan and Canada
+#GDPperCapita = GDPperCapita[-31,]
+#GDPperCapita = GDPperCapita[-116,]
+GDPperCapita = GDPperCapita[-164,]  
+
+
+```
+
+
+# Our world in data
+
+## Introduction
+
+"The journalism of today worries me. The emphasis on negative events is too strong. Quite often the news about events that represent real progress are overlooked and trivialized. The press tends to create a negative discouraging atmosphere. There is a danger that people will lose faith in progress when they hear so little that would support their faith in it. And real progress is closely linked to the faith of a society who considers this progress possible." - Albert Schweitzer (1875 - 1965)
+
+Our World in Data (OWID) (https://ourworldindata.org) is an online publication that shows how living conditions are changing. The aim is to give a global overview and to show changes over the very long run, so that we can see where we are coming from and where we are today.
+
+Our World in Data communicates this empirical knowledge in two ways:
+
+* through data visualizations - charts and maps.
+* by presenting the academic research on global development that explains what drives the changes that we see and what the consequences of these changes are.
+
+Take a look at https://ourworldindata.org/about/ to read a further introduction about this initiative.
+
+## Deadline
+
+Send your report and project via a Github repository link (see below) to rteam@statscience.nl **on or before** 23:59 June 30th 2017.
+
+## Concerning your grade for this assignment
+
+As before, the assignment will be graded on a monotonic discrete scale from *pass* to *fail*.
+
+## The Task
+
+Go to https://ourworldindata.org and find a topic that interests you. The goal is for you to write a report and create a Github repository that another student in this course should be able use to reproduce (part of) one of the info pages on ourworldindata.org.
+
+### A.
+The report should allow the reader to reproduce at least one example of **all** of the following things:
+
+* reproduction of a static plot
+* reproduction of an interactive plot OR turning a static plot into an interactive one (note that the interactivity has to be of *some* use)
+* perform a statistical test to test some hypothesis that you think of yourself
+* data cleaning or data manipulation
+* combining data from multiple sources and do one or more of the above
+
+An example for each of these points:
+
+* A good example of a static plot (i.e. a plot that has no use for interactivity) is the first plot of https://ourworldindata.org/world-population-growth/.
+* For a useful interactive plot, take a look at, for example, the first plot of https://ourworldindata.org/war-and-peace-after-1945/
+* A testable hypothesis could be: Does the emission per capita differ significantly between countries of different continents? (https://ourworldindata.org/co2-and-other-greenhouse-gas-emissions/)
+* Provide R code to go from http://cdiac.ornl.gov/ftp/ndp030/nation.1751_2013.ems to http://cdiac.ornl.gov/ftp/ndp030/CSV-FILES/nation.1751_2013.csv
+* Combine the information from the plot "Estimates of undernourished people in the world, 1990-2012 - FAO 2010 and 2012 report compared" of https://ourworldindata.org/hunger-and-undernourishment/ and "Daily caloric intake per capita in European countries and the USA" from https://ourworldindata.org/food-per-person/.
+
+### B.
+The reader should be able to download your report, and all requirements to compile the report, such as data files etc., from Github and be able to make contributions to it. I.e. go to Github.com, make an account, set up a repository for this project, and once you are done with the report send us a link to the repository so we can grade your project.
+
+### Tips
+
+* Don't *just* write `R` code, also write in words what you are doing, what the reader needs to know. Comments on particular snippets of code should be added to the `R` code using comments, elaboration about the purpose of the code should be part of the written report.
+* Use the assignment to familiarize yourself with `ggplot2` and interactive visualization packages (such as the packages showcased at http://www.htmlwidgets.org/).
+* Like the previous assignment, we just want you to show us that you know how to work with the tools you've been given during the course.
+* Reproduction of plots does not necessarily mean that, for example, all the colours of the plot have to *exactly* match. The point is that the plot conveys the same message in the same nice way. The plot should however look *at least* as pretty/clean/concise as the plots on https://ourworldindata.org (e.g. use `ggplot2` instead of `graphics`). Remember: you want the researcher/client/reader to look at your plots and take the time to appreciate their contents. This requires, in general, that the plots look nice.
+* Combining data can be tricky/difficult, so please only do this if you either feel very comfortable merging different sources of information, or if the sources can be relatively easily merged (as in the example given above).
+* You already know how to set-up a git repository, Github is not much different. Github has many help resources to help you set-up a repository, e.g. https://help.github.com/articles/create-a-repo/.
+* Of course you can also use the repository to use git to perform version control on your project!
+
+## Report requirements
+
+* The report should be an `R` markdown document that knits to html. 
+* You should use a consistent `R` coding style. 
+* The report should contain a clear distinction between `R` code, comments on `R` code, and elaboration on `R` code, or the results of the `R` code.
+
+Example of the last point:
+<hr style="height:1px;border:1px solid black;"/>
+We will make a variable that contains 100 random normally distributed values
+
+```{r}
+set.seed(1)
+x <- rnorm(100) # assign the value 1 to a
+```
+
+We can make a histogram to plot the results of this sample.
+
+```{r}
+hist(x, breaks="FD", col='lightblue') # the breaks argument decides the number of breaks, based on rule by FD.
+```
+
+The histogram is visibly slightly skewed, but that is reasonably likely to occur with such a small sample.
+<hr style="height:1px;border:1px solid black;"/>
+
+Finally include a link to the Creative Commons license to your report using the following HTML snippet:
+```html
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+```
+or add the text: 
+"This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA."
+
+In both cases provide links to the pages of Our World In Data you've used.
